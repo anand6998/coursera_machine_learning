@@ -39,10 +39,7 @@ for i = 1:C_size
        predictions = svmPredict(model,Xval);
 
        error = mean(double(predictions ~= yval));
-       
-       errors(k, 1) = C;
-       errors(k, 2) = sigma;
-       errors(k, 3) = error;
+       errors(k, :) = [C sigma error];
        k = k + 1;
     end
 end
