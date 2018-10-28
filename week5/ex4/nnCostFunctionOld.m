@@ -1,4 +1,4 @@
-function [J grad] = nnCostFunction(nn_params, ...
+function [J grad] = nnCostFunctionOld(nn_params, ...
                                    input_layer_size, ...
                                    hidden_layer_size, ...
                                    num_labels, ...
@@ -62,12 +62,9 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-z1 = X;
-a1 = [ones(m, 1) z1];
-z2 = a1 * Theta1';
-a2 = [ones(m, 1) sigmoid(z2)];
-a3 = sigmoid(a2 * Theta2');
-h = a3;
+a1 = [ones(m, 1) X];
+a2 = [ones(m, 1) sigmoid(a1 * Theta1')];
+h = sigmoid(a2 * Theta2');
 
 yVec = repmat([1:num_labels], m, 1) == repmat(y, 1, num_labels);
 
@@ -86,15 +83,29 @@ J = J + reg;
 delta1 = zeros(hidden_layer_size, input_layer_size + 1);
 delta2 = zeros(num_labels, hidden_layer_size + 1);
 
-%back propagation
-d3 = a3 - yVec;
-delta2 = d3' * a2;
+z2 = a1 * Theta1';
 
-d2 = (d3 * Theta2) .* [ones(m, 1) sigmoidGradient(z2)];
-d2_red = d2(:, [2:end]);
-
-delta1 = d2_red' * a1;
-%back propagation
+for i = 1:m
+    z2i = z2(i, :);
+    a2i = [ones(1, 1) sigmoid(z2i)];
+    
+    z3i = a2i * Theta2';
+    a3i = sigmoid(z3i);
+    
+    yi = yVec(i, :);
+    d3i = a3i - yi;
+    
+    d2i = (d3i * Theta2) .* [1 sigmoidGradient(z2i)]; 
+    
+    % Delta2 = Delta2 + a[j]  * delta[i]_[3]
+    delta2 = delta2 + (d3i' * a2i);
+    
+    % Delta1
+    a1i = a1(i, :);
+    d2iX = d2i(2:end);
+    delta1 = delta1 + (d2iX' * a1i);
+    
+end;
 
 Theta1_grad = (1 / m) * delta1;
 Theta2_grad = (1 / m) * delta2;

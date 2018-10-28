@@ -76,6 +76,9 @@ lambda = 0;
 
 J = nnCostFunction(nn_params, input_layer_size, hidden_layer_size, ...
                    num_labels, X, y, lambda);
+               
+% J = nnCostFunctionOld(nn_params, input_layer_size, hidden_layer_size, ...
+%                    num_labels, X, y, lambda);
 
 fprintf(['Cost at parameters (loaded from ex4weights): %f '...
          '\n(this value should be about 0.287629)\n'], J);
@@ -186,6 +189,7 @@ fprintf('\nTraining Neural Network... \n')
 options = optimset('MaxIter', 50);
 
 %  You should also try different values of lambda
+
 lambda = 1;
 
 % Create "short hand" for the cost function to be minimized
